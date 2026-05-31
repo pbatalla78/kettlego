@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#1a1a2e">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="manifest" href="manifest.json">
+<title>KettleGO!</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#1a1a2e;--bg2:#16213e;--text:#eee;--accent:#ff6b35;
+  --accent2:#ffd166;--blue:#3a86ff;--red:#ef476f;--green:#06d6a0;
+  --gray:#8d99ae;
+}
+html,body{height:100%;overflow:hidden}
+body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--text);display:flex;flex-direction:column;align-items:center;justify-content:center;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+
+.screen{display:none;flex-direction:column;align-items:center;justify-content:center;width:100%;height:100%;padding:20px;position:absolute;top:0;left:0}
+.screen.active{display:flex}
+
+.logo{margin-bottom:10px}
+.logo svg{width:80px;height:80px}
+.app-title{font-size:2.4rem;font-weight:900;letter-spacing:2px;color:var(--accent);margin-bottom:5px}
+.app-subtitle{font-size:0.95rem;color:var(--gray);margin-bottom:30px}
+
+.wheel-container{position:relative;width:240px;height:240px;margin-bottom:30px}
+.wheel-track{width:240px;height:240px;border-radius:50%;border:6px solid var(--bg2);position:relative}
+.wheel-progress{position:absolute;top:0;left:0;width:240px;height:240px}
+.wheel-progress circle{fill:none;stroke-width:6;stroke-linecap:round;transform:rotate(-90deg);transform-origin:50% 50%;transition:stroke-dashoffset .15s ease}
+.wheel-center{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center}
+.wheel-minutes{font-size:4rem;font-weight:900;color:var(--accent);line-height:1}
+.wheel-label{font-size:.85rem;color:var(--gray);margin-top:2px}
+.wheel-controls{display:flex;gap:20px;margin-bottom:30px}
+.wheel-btn{width:56px;height:56px;border-radius:50%;border:2px solid var(--accent);background:transparent;color:var(--accent);font-size:1.8rem;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s}
+.wheel-btn:active{background:var(--accent);color:var(--bg)}
+
+.btn-go{width:180px;height:56px;border-radius:28px;border:none;background:linear-gradient(135deg,var(--accent),#ff8c42);color:#fff;font-size:1.4rem;font-weight:900;letter-spacing:3px;cursor:pointer;box-shadow:0 4px 20px rgba(255,107,53,.4);transition:transform .1s}
+.btn-go:active{transform:scale(.95)}
+
+.exercise-header{width:100%;display:flex;justify-content:space-between;align-items:center;padding:0 5px;margin-bottom:6px}
+.exercise-progress-text{font-size:.8rem;color:var(--gray)}
+.btn-pause{width:44px;height:44px;border-radius:50%;border:2px solid var(--gray);background:transparent;color:var(--gray);font-size:1.2rem;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.btn-pause:active{border-color:var(--accent);color:var(--accent)}
+
+.progress-bar-container{width:100%;height:4px;background:var(--bg2);border-radius:2px;margin-bottom:10px;overflow:hidden}
+.progress-bar{height:100%;background:var(--accent);transition:width .3s ease;border-radius:2px}
+
+.exercise-illustration{width:100%;flex:1;display:flex;align-items:center;justify-content:center;min-height:0;position:relative;overflow:hidden}
+.exercise-illustration img{max-width:100%;max-height:100%;object-fit:contain;border-radius:12px}
+.exercise-illustration svg{width:100%;max-width:200px;max-height:100%}
+
+.exercise-name{font-size:1.4rem;font-weight:800;margin:6px 0 2px;text-align:center;min-height:1.8em;display:flex;align-items:center;justify-content:center}
+.exercise-desc{font-size:.78rem;color:var(--gray);text-align:center;min-height:1.2em;margin-bottom:2px;padding:0 10px;line-height:1.3}
+.side-indicator{font-size:1rem;font-weight:600;min-height:1.4em;margin-bottom:4px;transition:opacity .3s}
+.side-indicator.blue{color:var(--blue)}
+.side-indicator.red{color:var(--red)}
+.side-indicator.change{color:var(--accent2);font-size:1.15rem;font-weight:800;animation:pulse .5s ease infinite alternate}
+
+@keyframes pulse{from{opacity:.7;transform:scale(1)}to{opacity:1;transform:scale(1.08)}}
+
+.timer-ring-container{position:relative;width:150px;height:150px;margin:2px 0 10px}
+.timer-ring{width:150px;height:150px}
+.timer-ring-bg{fill:none;stroke:var(--bg2);stroke-width:8}
+.timer-ring-fg{fill:none;stroke-width:8;stroke-linecap:round;transform:rotate(-90deg);transform-origin:50% 50%;transition:stroke .3s}
+.timer-text{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:2.8rem;font-weight:900;font-variant-numeric:tabular-nums}
+
+.rest-label{font-size:1.3rem;color:var(--green);font-weight:700;margin-bottom:5px}
+
+.finish-trophy{font-size:5rem;margin-bottom:15px}
+.finish-text{font-size:1.8rem;font-weight:900;color:var(--accent2);text-align:center;margin-bottom:10px}
+.finish-stats{font-size:.95rem;color:var(--gray);text-align:center;margin-bottom:30px;line-height:1.6}
+.btn-restart{width:180px;height:50px;border-radius:25px;border:2px solid var(--accent);background:transparent;color:var(--accent);font-size:1.1rem;font-weight:700;cursor:pointer;transition:all .15s}
+.btn-restart:active{background:var(--accent);color:#fff}
+
+.confetti-container{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:10}
+.confetti{position:absolute;width:10px;height:10px;opacity:.9}
+
+.pause-overlay{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(26,26,46,.92);z-index:20;flex-direction:column;align-items:center;justify-content:center}
+.pause-overlay.active{display:flex}
+.pause-title{font-size:1.8rem;font-weight:800;color:var(--accent2);margin-bottom:30px}
+.btn-resume{width:180px;height:56px;border-radius:28px;border:none;background:linear-gradient(135deg,var(--green),#0abf8a);color:#fff;font-size:1.3rem;font-weight:800;cursor:pointer;box-shadow:0 4px 20px rgba(6,214,160,.3)}
+.btn-resume:active{transform:scale(.95)}
+.btn-quit{margin-top:15px;background:none;border:none;color:var(--gray);font-size:.95rem;cursor:pointer;text-decoration:underline}
+</style>
+</head>
+<body>
+
+<div id="homeScreen" class="screen active">
+  <div class="logo">
+    <svg viewBox="0 0 100 100">
+      <ellipse cx="50" cy="62" rx="22" ry="26" fill="var(--accent)"/>
+      <ellipse cx="50" cy="59" rx="16" ry="20" fill="var(--bg)"/>
+      <ellipse cx="50" cy="64" rx="14" ry="18" fill="var(--accent)"/>
+      <path d="M40 38 Q50 22 60 38" stroke="var(--accent)" stroke-width="5" fill="none" stroke-linecap="round"/>
+      <path d="M44 30 Q50 16 56 30" stroke="var(--accent2)" stroke-width="3" fill="none" stroke-linecap="round"/>
+    </svg>
+  </div>
+  <div class="app-title">KettleGO!</div>
+  <div class="app-subtitle">Tu entreno con kettlebell</div>
+  <div class="wheel-container">
+    <div class="wheel-track">
+      <svg class="wheel-progress" viewBox="0 0 240 240">
+        <circle id="wheelCircle" cx="120" cy="120" r="114" stroke="var(--accent)" stroke-dasharray="716.28" stroke-dashoffset="716.28"/>
+      </svg>
+    </div>
+    <div class="wheel-center">
+      <div class="wheel-minutes" id="minutesDisplay">10</div>
+      <div class="wheel-label">minutos</div>
+    </div>
+  </div>
+  <div class="wheel-controls">
+    <button class="wheel-btn" id="btnMinus" aria-label="Menos minutos">-</button>
+    <button class="wheel-btn" id="btnPlus" aria-label="Más minutos">+</button>
+  </div>
+  <button class="btn-go" id="btnGo">GO!</button>
+</div>
+
+<div id="exerciseScreen" class="screen">
+  <div class="exercise-header">
+    <span class="exercise-progress-text" id="progressText">1 / 12</span>
+    <button class="btn-pause" id="btnPause" aria-label="Pausar">&#10074;&#10074;</button>
+  </div>
+  <div class="progress-bar-container">
+    <div class="progress-bar" id="progressBar"></div>
+  </div>
+  <div class="exercise-illustration" id="exerciseIllustration"></div>
+  <div class="exercise-name" id="exerciseName"></div>
+  <div class="exercise-desc" id="exerciseDesc"></div>
+  <div class="side-indicator" id="sideIndicator">&nbsp;</div>
+  <div class="timer-ring-container">
+    <svg class="timer-ring" viewBox="0 0 150 150">
+      <circle class="timer-ring-bg" cx="75" cy="75" r="68"/>
+      <circle class="timer-ring-fg" id="timerRingFg" cx="75" cy="75" r="68" stroke="var(--blue)" stroke-dasharray="427.26" stroke-dashoffset="0"/>
+    </svg>
+    <div class="timer-text" id="timerText">40</div>
+  </div>
+</div>
+
+<div id="finishScreen" class="screen">
+  <div class="finish-trophy">&#127942;</div>
+  <div class="finish-text">Bien hecho<br>campeón!</div>
+  <div class="finish-stats" id="finishStats"></div>
+  <button class="btn-restart" id="btnRestart">Nuevo entreno</button>
+</div>
+
+<div class="pause-overlay" id="pauseOverlay">
+  <div class="pause-title">Pausa</div>
+  <button class="btn-resume" id="btnResume">Continuar</button>
+  <button class="btn-quit" id="btnQuit">Terminar sesión</button>
+</div>
+
+<div class="confetti-container" id="confettiContainer"></div>
+
+<script>
+const EXERCISES = {
+  lower: [
+    {id:'full_squat',name:'Full Squat',desc:'Sentadilla profunda con kettlebell al pecho, baja hasta abajo',unilateral:false,preferred:true,hasPhoto:true},
+    {id:'forward_lunges',name:'Forward Lunges',desc:'Zancada frontal alternando piernas, kettlebell al pecho',unilateral:true,preferred:true,hasPhoto:true},
+    {id:'goblet_squat',name:'Goblet Squat',desc:'Sentadilla copa: sujeta la kettlebell con ambas manos al pecho',unilateral:false,preferred:true,hasPhoto:true},
+    {id:'hamstring_curls',name:'Hamstring Curls',desc:'Tumbado boca arriba, curl de isquiotibiales con kettlebell',unilateral:false,preferred:true,hasPhoto:true},
+    {id:'sumo_squat',name:'Sumo Squat',desc:'Sentadilla con piernas muy abiertas, kettlebell colgando entre piernas',unilateral:false,preferred:true,hasPhoto:true},
+    {id:'waiters_squat',name:"Waiter's Squat",desc:'Sentadilla con kettlebell levantada en una mano como camarero',unilateral:true,preferred:false,hasPhoto:true},
+    {id:'catchers_squat',name:"Catcher's Squat",desc:'Sentadilla profunda con kettlebell al pecho, posición de catcher',unilateral:false,preferred:false,hasPhoto:true},
+    {id:'rear_lunges',name:'Rear Lunges',desc:'Zancada hacia atrás alternando piernas, kettlebell al pecho',unilateral:true,preferred:true,hasPhoto:true},
+    {id:'dead_lift',name:'Dead Lift',desc:'Peso muerto: baja la kettlebell al suelo con espalda recta',unilateral:false,preferred:true,hasPhoto:true},
+    {id:'catchers_squat_press',name:"Catcher's Squat & Press",desc:'Sentadilla catcher + press arriba al subir',unilateral:true,preferred:false,hasPhoto:true},
+    {id:'bridge_leg_spreaders',name:'Bridge Leg Spreaders',desc:'Puente de glúteos con kettlebell al pecho, abre y cierra piernas',unilateral:false,preferred:false,hasPhoto:true},
+  ],
+  upper: [
+    {id:'biceps_curls',name:'Biceps Curls',desc:'Curl de bíceps con kettlebell, codos pegados al cuerpo',unilateral:false,preferred:true,hasPhoto:true},
+    {id:'hammer_grip_curls',name:'Hammer Grip Curls',desc:'Curl martillo con agarre neutro, trabaja bíceps y antebrazo',unilateral:false,preferred:false,hasPhoto:true},
+    {id:'triceps_lifts',name:'Triceps Lifts',desc:'Extensión de tríceps por encima de la cabeza con ambas manos',unilateral:false,preferred:true,hasPhoto:true},
+    {id:'skull_crushers',name:'Skull Crushers',desc:'Tumbado, extensión de tríceps bajando la kettlebell hacia la frente',unilateral:false,preferred:false,hasPhoto:true},
+    {id:'bottom_up_press',name:'Bottom-Up Press',desc:'Press vertical con kettlebell invertida, trabaja agarre y hombro',unilateral:true,preferred:true,hasPhoto:true},
+    {id:'side_grip_pushups',name:'Side Grip Pushups',desc:'Flexiones con una mano sobre la kettlebell',unilateral:false,preferred:true,hasPhoto:true},
+    {id:'one_arm_row',name:'One-arm Row',desc:'Remo a un brazo inclinado, tira de la kettlebell hacia la cadera',unilateral:true,preferred:false,hasPhoto:true},
+    {id:'over_the_shoulder',name:'Over The Shoulder',desc:'Lanza la kettlebell por encima del hombro alternando lados',unilateral:true,preferred:false,hasPhoto:true},
+    {id:'halo',name:'Halo',desc:'Gira la kettlebell alrededor de la cabeza como un halo',unilateral:false,preferred:false,hasPhoto:true},
+    {id:'one_arm_alt_swing',name:'One-arm Alternating Swing',desc:'Swing a un brazo alternando mano en cada repetición',unilateral:true,preferred:true,hasPhoto:true},
+    {id:'kettlebell_clean',name:'Kettlebell Clean',desc:'Tirón explosivo desde el suelo hasta posición rack en el hombro',unilateral:true,preferred:false,hasPhoto:false},
+  ],
+  core: [
+    {id:'mason_twist',name:'Mason Twist',desc:'Sentado, gira el torso lado a lado con la kettlebell',unilateral:false,preferred:true,hasPhoto:true},
+    {id:'wood_choppers',name:'Wood Choppers',desc:'Movimiento diagonal de leñador, de arriba a abajo cruzando el cuerpo',unilateral:true,preferred:true,hasPhoto:true},
+    {id:'side_bends',name:'Side Bends',desc:'Inclinación lateral con kettlebell en una mano, trabaja oblicuos',unilateral:true,preferred:true,hasPhoto:true},
+    {id:'kettlebell_situps',name:'Kettlebell Situps',desc:'Abdominales tumbado empujando la kettlebell hacia arriba',unilateral:false,preferred:false,hasPhoto:true},
+    {id:'one_arm_around',name:'One Arm Around',desc:'Pasa la kettlebell alrededor del cuerpo de mano a mano',unilateral:true,preferred:false,hasPhoto:true},
+    {id:'slingshot',name:'Slingshot',desc:'Pasa la kettlebell alrededor de la cintura, tirachinas',unilateral:false,preferred:false,hasPhoto:true},
+    {id:'bottom_up_side_swing',name:'Bottom-Up Side Swing',desc:'Swing lateral con kettlebell invertida, control de agarre',unilateral:true,preferred:true,hasPhoto:true},
+    {id:'russian_swing',name:'Russian Swing',desc:'Swing clásico hasta altura del pecho con impulso de cadera',unilateral:false,preferred:true,hasPhoto:true},
+    {id:'squat_press',name:'Squat & Press',desc:'Sentadilla + press militar arriba al subir, ejercicio completo',unilateral:true,preferred:true,hasPhoto:true},
+    {id:'american_swing',name:'American Swing',desc:'Swing completo hasta arriba de la cabeza con ambas manos',unilateral:false,preferred:true,hasPhoto:true},
+    {id:'turkish_getup',name:'Turkish Get-Up',desc:'Levántate del suelo paso a paso con kettlebell arriba, brazo extendido',unilateral:true,preferred:false,hasPhoto:false},
+    {id:'figure_8',name:'Figure 8',desc:'Pasa la kettlebell entre las piernas dibujando un 8',unilateral:false,preferred:false,hasPhoto:false},
+    {id:'high_pull',name:'High Pull',desc:'Tirón explosivo llevando la kettlebell hasta la barbilla',unilateral:true,preferred:false,hasPhoto:false},
+  ]
+};
+
+const EXERCISE_SVGS = {
+  kettlebell_clean: `<svg viewBox="0 0 200 260" xmlns="http://www.w3.org/2000/svg"><circle cx="100" cy="38" r="18" fill="#ff6b35"/><line x1="100" y1="56" x2="105" y2="130" stroke="#ff6b35" stroke-width="6" stroke-linecap="round"/><line x1="100" y1="70" x2="125" y2="55" stroke="#ff6b35" stroke-width="5" stroke-linecap="round"/><line x1="125" y1="55" x2="122" y2="70" stroke="#ff6b35" stroke-width="5" stroke-linecap="round"/><ellipse cx="120" cy="75" rx="9" ry="10" fill="#ffd166" stroke="#ff6b35" stroke-width="2"/><line x1="100" y1="78" x2="75" y2="100" stroke="#ff6b35" stroke-width="5" stroke-linecap="round"/><line x1="105" y1="130" x2="82" y2="190" stroke="#ff6b35" stroke-width="6" stroke-linecap="round"/><line x1="105" y1="130" x2="125" y2="190" stroke="#ff6b35" stroke-width="6" stroke-linecap="round"/><line x1="82" y1="190" x2="78" y2="220" stroke="#ff6b35" stroke-width="5" stroke-linecap="round"/><line x1="125" y1="190" x2="128" y2="220" stroke="#ff6b35" stroke-width="5" stroke-linecap="round"/><path d="M118 78 Q130 90 120 95" stroke="#ffd166" stroke-width="2" fill="none" opacity=".6"/></svg>`,
+  turkish_getup: `<svg viewBox="0 0 200 260" xmlns="http://www.w3.org/2000/svg"><circle cx="80" cy="110" r="18" fill="#ff6b35"/><line x1="88" y1="125" x2="120" y2="175" stroke="#ff6b35" stroke-width="6" stroke-linecap="round"/><line x1="80" y1="98" x2="65" y2="60" stroke="#ff6b35" stroke-width="5" stroke-linecap="round"/><ellipse cx="62" cy="52" rx="10" ry="10" fill="#ffd166" stroke="#ff6b35" stroke-width="2"/><line x1="85" y1="120" x2="115" y2="140" stroke="#ff6b35" stroke-width="5" stroke-linecap="round"/><line x1="120" y1="175" x2="100" y2="215" stroke="#ff6b35" stroke-width="6" stroke-linecap="round"/><line x1="120" y1="175" x2="150" y2="210" stroke="#ff6b35" stroke-width="6" stroke-linecap="round"/><line x1="30" y1="222" x2="170" y2="222" stroke="#ff6b35" stroke-width="3" opacity=".2" stroke-linecap="round"/></svg>`,
+  figure_8: `<svg viewBox="0 0 200 260" xmlns="http://www.w3.org/2000/svg"><circle cx="100" cy="40" r="18" fill="#ff6b35"/><line x1="100" y1="58" x2="100" y2="128" stroke="#ff6b35" stroke-width="6" stroke-linecap="round"/><line x1="100" y1="80" x2="72" y2="100" stroke="#ff6b35" stroke-width="5" stroke-linecap="round"/><line x1="100" y1="80" x2="128" y2="100" stroke="#ff6b35" stroke-width="5" stroke-linecap="round"/><line x1="100" y1="128" x2="60" y2="180" stroke="#ff6b35" stroke-width="6" stroke-linecap="round"/><line x1="100" y1="128" x2="140" y2="180" stroke="#ff6b35" stroke-width="6" stroke-linecap="round"/><line x1="60" y1="180" x2="55" y2="215" stroke="#ff6b35" stroke-width="5" stroke-linecap="round"/><line x1="140" y1="180" x2="145" y2="215" stroke="#ff6b35" stroke-width="5" stroke-linecap="round"/><path d="M70 155 Q100 140 130 155 Q100 170 70 155" stroke="#ffd166" stroke-width="3" fill="none"/><ellipse cx="78" cy="152" rx="8" ry="8" fill="#ffd166" stroke="#ff6b35" stroke-width="2"/></svg>`,
+  high_pull: `<svg viewBox="0 0 200 260" xmlns="http://www.w3.org/2000/svg"><circle cx="100" cy="38" r="18" fill="#ff6b35"/><line x1="100" y1="56" x2="100" y2="135" stroke="#ff6b35" stroke-width="6" stroke-linecap="round"/><line x1="100" y1="65" x2="130" y2="45" stroke="#ff6b35" stroke-width="5" stroke-linecap="round"/><line x1="100" y1="65" x2="70" y2="45" stroke="#ff6b35" stroke-width="5" stroke-linecap="round"/><ellipse cx="100" cy="42" rx="12" ry="10" fill="#ffd166" stroke="#ff6b35" stroke-width="2"/><path d="M100 50 L100 30" stroke="#ffd166" stroke-width="2" opacity=".6"/><path d="M95 35 L100 25 L105 35" stroke="#ffd166" stroke-width="2" fill="none" opacity=".6"/><line x1="100" y1="135" x2="80" y2="195" stroke="#ff6b35" stroke-width="6" stroke-linecap="round"/><line x1="100" y1="135" x2="120" y2="195" stroke="#ff6b35" stroke-width="6" stroke-linecap="round"/><line x1="80" y1="195" x2="78" y2="225" stroke="#ff6b35" stroke-width="5" stroke-linecap="round"/><line x1="120" y1="195" x2="122" y2="225" stroke="#ff6b35" stroke-width="5" stroke-linecap="round"/></svg>`,
+  rest: `<svg viewBox="0 0 200 260" xmlns="http://www.w3.org/2000/svg"><circle cx="100" cy="60" r="20" fill="#06d6a0"/><line x1="100" y1="80" x2="100" y2="150" stroke="#06d6a0" stroke-width="6" stroke-linecap="round"/><line x1="100" y1="100" x2="70" y2="120" stroke="#06d6a0" stroke-width="5" stroke-linecap="round"/><line x1="100" y1="100" x2="130" y2="120" stroke="#06d6a0" stroke-width="5" stroke-linecap="round"/><line x1="100" y1="150" x2="80" y2="200" stroke="#06d6a0" stroke-width="6" stroke-linecap="round"/><line x1="100" y1="150" x2="120" y2="200" stroke="#06d6a0" stroke-width="6" stroke-linecap="round"/><rect x="65" y="195" width="70" height="14" rx="4" fill="#06d6a0" opacity=".3"/><text x="100" y="240" text-anchor="middle" fill="#06d6a0" font-size="14" font-weight="bold" font-family="sans-serif">Descansa</text></svg>`
+};
+
+// ========== APP STATE ==========
+let state = { minutes:10, schedule:[], currentIndex:0, timeLeft:0, totalDuration:0, isPaused:false, intervalId:null };
+
+const $ = id => document.getElementById(id);
+const homeScreen=$('homeScreen'), exerciseScreen=$('exerciseScreen'), finishScreen=$('finishScreen');
+const minutesDisplay=$('minutesDisplay'), wheelCircle=$('wheelCircle');
+const progressText=$('progressText'), progressBar=$('progressBar');
+const exerciseIllustration=$('exerciseIllustration'), exerciseName=$('exerciseName');
+const exerciseDesc=$('exerciseDesc'), sideIndicator=$('sideIndicator');
+const timerRingFg=$('timerRingFg'), timerText=$('timerText');
+const pauseOverlay=$('pauseOverlay'), finishStats=$('finishStats');
+const confettiContainer=$('confettiContainer');
+
+const CIRCUMFERENCE = 2*Math.PI*114;
+const TIMER_CIRCUMFERENCE = 2*Math.PI*68;
+
+function updateWheel(){
+  wheelCircle.style.strokeDashoffset = CIRCUMFERENCE*(1-state.minutes/25);
+  minutesDisplay.textContent = state.minutes;
+}
+$('btnMinus').addEventListener('click',()=>{ if(state.minutes>1){state.minutes--;updateWheel()} });
+$('btnPlus').addEventListener('click',()=>{ if(state.minutes<25){state.minutes++;updateWheel()} });
+
+let wheelDragging=false;
+const wheelContainer=document.querySelector('.wheel-container');
+function getAngleFromEvent(e){
+  const rect=wheelContainer.getBoundingClientRect();
+  const cx=rect.left+rect.width/2, cy=rect.top+rect.height/2;
+  const cX=e.touches?e.touches[0].clientX:e.clientX;
+  const cY=e.touches?e.touches[0].clientY:e.clientY;
+  let angle=Math.atan2(cY-cy,cX-cx)+Math.PI/2;
+  if(angle<0) angle+=2*Math.PI;
+  return angle;
+}
+function handleWheelMove(e){
+  if(!wheelDragging) return;
+  e.preventDefault();
+  state.minutes=Math.max(1,Math.min(25,Math.round(getAngleFromEvent(e)/(2*Math.PI)*25)));
+  updateWheel();
+}
+wheelContainer.addEventListener('mousedown',()=>wheelDragging=true);
+wheelContainer.addEventListener('touchstart',()=>wheelDragging=true,{passive:true});
+document.addEventListener('mousemove',handleWheelMove);
+document.addEventListener('touchmove',handleWheelMove,{passive:false});
+document.addEventListener('mouseup',()=>wheelDragging=false);
+document.addEventListener('touchend',()=>wheelDragging=false);
+updateWheel();
+
+// ========== ILLUSTRATION ==========
+function renderIllustration(item){
+  if(item.type==='rest'){
+    exerciseIllustration.innerHTML = EXERCISE_SVGS.rest;
+    return;
+  }
+  const ex = item.exercise;
+  if(ex.hasPhoto){
+    const img = document.createElement('img');
+    img.src = 'img/'+ex.id+'.jpg';
+    img.alt = ex.name;
+    img.onerror = function(){ this.parentElement.innerHTML = EXERCISE_SVGS[ex.id]||''; };
+    exerciseIllustration.innerHTML = '';
+    exerciseIllustration.appendChild(img);
+  } else {
+    exerciseIllustration.innerHTML = EXERCISE_SVGS[ex.id]||'';
+  }
+}
+
+// ========== WORKOUT GENERATION ==========
+function pickExercise(group){
+  const exercises=EXERCISES[group];
+  const weighted=[];
+  exercises.forEach(ex=>{ for(let i=0;i<(ex.preferred?3:1);i++) weighted.push(ex) });
+  return weighted[Math.floor(Math.random()*weighted.length)];
+}
+
+function generateSchedule(totalMinutes){
+  const totalSeconds=totalMinutes*60;
+  const exerciseDuration=40, restDuration=30;
+  const groups=['lower','upper','core'];
+  let schedule=[], groupIndex=Math.floor(Math.random()*3), usedSeconds=0, exercisesSinceRest=0;
+
+  while(usedSeconds+exerciseDuration<=totalSeconds){
+    const group=groups[groupIndex%3];
+    schedule.push({type:'exercise',exercise:pickExercise(group),group,duration:exerciseDuration});
+    usedSeconds+=exerciseDuration;
+    exercisesSinceRest++;
+    groupIndex++;
+    if(exercisesSinceRest>=5 && usedSeconds+restDuration+exerciseDuration<=totalSeconds){
+      schedule.push({type:'rest',duration:restDuration});
+      usedSeconds+=restDuration;
+      exercisesSinceRest=0;
+    }
+  }
+  return schedule;
+}
+
+// ========== SESSION CONTROL ==========
+function showScreen(s){ document.querySelectorAll('.screen').forEach(x=>x.classList.remove('active')); s.classList.add('active') }
+
+function startSession(){
+  state.schedule=generateSchedule(state.minutes);
+  if(!state.schedule.length) return;
+  state.currentIndex=0; state.totalDuration=state.schedule.reduce((s,i)=>s+i.duration,0); state.isPaused=false;
+  showScreen(exerciseScreen);
+  startItem(0);
+}
+
+function startItem(index){
+  if(index>=state.schedule.length){ finishSession(); return; }
+  state.currentIndex=index;
+  const item=state.schedule[index];
+  state.timeLeft=item.duration;
+
+  const exerciseItems=state.schedule.filter(s=>s.type==='exercise');
+  const currentExNum=state.schedule.slice(0,index+1).filter(s=>s.type==='exercise').length;
+
+  if(item.type==='rest'){
+    progressText.textContent='Descanso';
+    exerciseName.textContent='Descanso';
+    exerciseDesc.textContent='Respira y recupérate';
+    sideIndicator.innerHTML='&nbsp;';
+    sideIndicator.className='side-indicator';
+  } else {
+    progressText.textContent=currentExNum+' / '+exerciseItems.length;
+    exerciseName.textContent=item.exercise.name;
+    exerciseDesc.textContent=item.exercise.desc;
+    sideIndicator.innerHTML='&nbsp;';
+    sideIndicator.className='side-indicator';
+  }
+  renderIllustration(item);
+  updateTimerDisplay();
+  startTimer();
+}
+
+function updateTimerDisplay(){
+  const item=state.schedule[state.currentIndex];
+  const duration=item.duration, elapsed=duration-state.timeLeft, pct=elapsed/duration;
+
+  timerRingFg.style.strokeDashoffset=TIMER_CIRCUMFERENCE*(1-pct);
+  timerText.textContent=state.timeLeft;
+
+  const totalElapsed=state.schedule.slice(0,state.currentIndex).reduce((s,i)=>s+i.duration,0)+elapsed;
+  progressBar.style.width=(totalElapsed/state.totalDuration*100)+'%';
+
+  if(item.type==='rest'){
+    timerRingFg.style.stroke='var(--green)';
+    timerText.style.color='var(--green)';
+    sideIndicator.innerHTML='&nbsp;';
+    sideIndicator.className='side-indicator';
+    return;
+  }
+
+  const half=duration/2;
+  if(elapsed<half){ timerRingFg.style.stroke='var(--blue)'; timerText.style.color='var(--blue)'; }
+  else { timerRingFg.style.stroke='var(--red)'; timerText.style.color='var(--red)'; }
+
+  if(item.exercise.unilateral){
+    const timeFromHalf=elapsed-half;
+    if(timeFromHalf>=-2 && timeFromHalf<2){
+      sideIndicator.textContent='Cambia de lado';
+      sideIndicator.className='side-indicator change';
+    } else if(elapsed<half){
+      sideIndicator.innerHTML='&nbsp;';
+      sideIndicator.className='side-indicator blue';
+    } else {
+      sideIndicator.innerHTML='&nbsp;';
+      sideIndicator.className='side-indicator red';
+    }
+  } else {
+    sideIndicator.innerHTML='&nbsp;';
+    sideIndicator.className='side-indicator';
+  }
+}
+
+function startTimer(){
+  clearInterval(state.intervalId);
+  state.intervalId=setInterval(()=>{
+    if(state.isPaused) return;
+    state.timeLeft--;
+    if(state.timeLeft<=0){ clearInterval(state.intervalId); startItem(state.currentIndex+1); }
+    else updateTimerDisplay();
+  },1000);
+}
+
+$('btnPause').addEventListener('click',()=>{ state.isPaused=true; pauseOverlay.classList.add('active') });
+$('btnResume').addEventListener('click',()=>{ state.isPaused=false; pauseOverlay.classList.remove('active') });
+$('btnQuit').addEventListener('click',()=>{ clearInterval(state.intervalId); state.isPaused=false; pauseOverlay.classList.remove('active'); showScreen(homeScreen) });
+
+function finishSession(){
+  clearInterval(state.intervalId);
+  const exerciseCount=state.schedule.filter(s=>s.type==='exercise').length;
+  finishStats.innerHTML=exerciseCount+' ejercicios completados<br>'+state.minutes+' minutos de entreno';
+  showScreen(finishScreen);
+  launchConfetti();
+}
+
+$('btnRestart').addEventListener('click',()=>{ confettiContainer.innerHTML=''; showScreen(homeScreen) });
+$('btnGo').addEventListener('click',startSession);
+
+function launchConfetti(){
+  confettiContainer.innerHTML='';
+  const colors=['#ff6b35','#ffd166','#06d6a0','#3a86ff','#ef476f','#fff'];
+  for(let i=0;i<80;i++){
+    const c=document.createElement('div');
+    c.className='confetti';
+    c.style.left=Math.random()*100+'%';
+    c.style.top='-10px';
+    c.style.backgroundColor=colors[Math.floor(Math.random()*colors.length)];
+    c.style.width=(6+Math.random()*8)+'px';
+    c.style.height=(6+Math.random()*8)+'px';
+    c.style.borderRadius=Math.random()>.5?'50%':'2px';
+    c.style.transform='rotate('+Math.random()*360+'deg)';
+    c.style.animation='confettiFall '+(1.5+Math.random()*2)+'s '+(Math.random()*1.5)+'s ease-out forwards';
+    confettiContainer.appendChild(c);
+  }
+}
+
+const style=document.createElement('style');
+style.textContent='@keyframes confettiFall{0%{transform:translateY(0) rotate(0deg);opacity:1}100%{transform:translateY(100vh) rotate(720deg);opacity:0}}';
+document.head.appendChild(style);
+
+if('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(()=>{});
+</script>
+</body>
+</html>
