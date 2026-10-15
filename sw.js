@@ -1,4 +1,4 @@
-const CACHE_NAME = 'kettlego-v2';
+const CACHE_NAME = 'kettlego-v3';
 const ASSETS = ['./index.html', './manifest.json'];
 
 self.addEventListener('install', e => {

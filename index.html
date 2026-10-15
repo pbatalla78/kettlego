@@ -24,16 +24,19 @@ body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:var(--
 .logo{margin-bottom:10px}
 .logo svg{width:80px;height:80px}
 .app-title{font-size:2.4rem;font-weight:900;letter-spacing:2px;color:var(--accent);margin-bottom:5px}
-.app-subtitle{font-size:0.95rem;color:var(--gray);margin-bottom:30px}
+.app-subtitle{font-size:0.95rem;color:var(--gray);margin-bottom:20px}
 
-.wheel-container{position:relative;width:240px;height:240px;margin-bottom:30px}
+.wheel-container{position:relative;width:240px;height:240px;margin-bottom:20px}
 .wheel-track{width:240px;height:240px;border-radius:50%;border:6px solid var(--bg2);position:relative}
 .wheel-progress{position:absolute;top:0;left:0;width:240px;height:240px}
 .wheel-progress circle{fill:none;stroke-width:6;stroke-linecap:round;transform:rotate(-90deg);transform-origin:50% 50%;transition:stroke-dashoffset .15s ease}
 .wheel-center{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center}
 .wheel-minutes{font-size:4rem;font-weight:900;color:var(--accent);line-height:1}
 .wheel-label{font-size:.85rem;color:var(--gray);margin-top:2px}
-.wheel-controls{display:flex;gap:20px;margin-bottom:30px}
+.wheel-controls{display:flex;gap:20px;margin-bottom:20px}
+.level-picker{display:flex;background:var(--bg2);border-radius:26px;padding:4px;margin-bottom:24px}
+.level-btn{border:none;background:transparent;color:var(--text2);font-size:.95rem;font-weight:700;padding:10px 14px;border-radius:22px;cursor:pointer;min-height:44px}
+.level-btn.active{background:var(--accent);color:#fff}
 .wheel-btn{width:56px;height:56px;border-radius:50%;border:2px solid var(--accent);background:transparent;color:var(--accent);font-size:1.8rem;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s}
 .wheel-btn:active{background:var(--accent);color:var(--bg)}
 
@@ -145,6 +148,11 @@ body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:var(--
   <div class="wheel-controls">
     <button class="wheel-btn" id="btnMinus" aria-label="Menos minutos">-</button>
     <button class="wheel-btn" id="btnPlus" aria-label="Más minutos">+</button>
+  </div>
+  <div class="level-picker" id="levelPicker" role="radiogroup" aria-label="Nivel">
+    <button class="level-btn" role="radio" data-level="beginner">Principiante</button>
+    <button class="level-btn" role="radio" data-level="intermediate">Intermedio</button>
+    <button class="level-btn" role="radio" data-level="advanced">Avanzado</button>
   </div>
   <button class="btn-go" id="btnGo">GO!</button>
 </div>
@@ -275,10 +283,45 @@ const EXERCISE_SVGS = {
 };
 
 // ========== APP STATE ==========
-const WORK_DURATION=40, REST_DURATION=30, SWITCH_DURATION=5;
-const PREPARE_FIRST=5, PREPARE_AFTER_REST=5, PREPARE_DEFAULT=10;
-const EXERCISES_PER_REST=5;
-let state = { minutes:10, schedule:[], phases:[], phaseIndex:0, phaseEndAt:0, remainingMs:0, lastSecond:null, totalDuration:0, totalExercises:0, renderedItem:null, isPaused:false, running:false, tickId:null };
+const BASE_WORK=40, SWITCH_DURATION=5;
+const PREPARE_FIRST=5, PREPARE_AFTER_REST=5;
+
+// ========== LEVEL ==========
+// The level (0-100) scales work time, get-ready time and how often/long the rests are
+const LEVELS={
+  beginner:{label:'Principiante',value:30},
+  intermediate:{label:'Intermedio',value:60},
+  advanced:{label:'Avanzado',value:85}
+};
+function workCoef(level){
+  if(level<=20) return 2/3;
+  if(level<=35) return 5/6;
+  if(level<=70) return 1;
+  if(level<=90) return 7/6;
+  return 4/3;
+}
+function prepareDuration(level){
+  if(level<=20) return 20;
+  if(level<=50) return 15;
+  if(level<=75) return 10;
+  return 5;
+}
+function restDuration(level){
+  if(level<66) return 30;
+  if(level<76) return 25;
+  if(level<86) return 20;
+  if(level<96) return 15;
+  return 10;
+}
+function levelParams(level){
+  return {
+    work:Math.round(BASE_WORK*workCoef(level)/5)*5,
+    prepare:prepareDuration(level),
+    restEvery:Math.max(4+Math.trunc((level-50)/10),2),
+    rest:restDuration(level)
+  };
+}
+let state = { minutes:10, level:'intermediate', schedule:[], phases:[], phaseIndex:0, phaseEndAt:0, remainingMs:0, lastSecond:null, totalDuration:0, totalExercises:0, renderedItem:null, isPaused:false, running:false, tickId:null };
 
 const $ = id => document.getElementById(id);
 const homeScreen=$('homeScreen'), exerciseScreen=$('exerciseScreen'), finishScreen=$('finishScreen');
@@ -325,6 +368,24 @@ document.addEventListener('mouseup',()=>wheelDragging=false);
 document.addEventListener('touchend',()=>wheelDragging=false);
 updateWheel();
 
+const levelPicker=$('levelPicker');
+function updateLevelPicker(){
+  levelPicker.querySelectorAll('.level-btn').forEach(b=>{
+    const active=b.dataset.level===state.level;
+    b.classList.toggle('active',active);
+    b.setAttribute('aria-checked',active);
+  });
+}
+try{ const saved=localStorage.getItem('kettlego.level'); if(LEVELS[saved]) state.level=saved; }catch(e){}
+levelPicker.addEventListener('click',e=>{
+  const btn=e.target.closest('.level-btn');
+  if(!btn) return;
+  state.level=btn.dataset.level;
+  try{ localStorage.setItem('kettlego.level',state.level) }catch(e){}
+  updateLevelPicker();
+});
+updateLevelPicker();
+
 // ========== ILLUSTRATION ==========
 // An exercise can be used once it has a photo or a fallback drawing
 function isAvailable(ex){ return ex.hasPhoto || !!EXERCISE_SVGS[ex.id] }
@@ -360,27 +421,33 @@ function pickExercise(group, used){
   return weighted[Math.floor(Math.random()*weighted.length)];
 }
 
-function exerciseDuration(ex){ return WORK_DURATION+(ex.unilateral?SWITCH_DURATION:0) }
+// Unilateral work must split evenly into two sides
+function exerciseDuration(ex,params){
+  if(!ex.unilateral) return params.work;
+  const work=(params.work/5)%2?params.work+5:params.work;
+  return work+SWITCH_DURATION;
+}
 
-function generateSchedule(totalMinutes){
+function generateSchedule(totalMinutes,level){
   const totalSeconds=totalMinutes*60;
+  const params=levelParams(level);
   const groups=['lower','upper','core'], used=new Set();
   let schedule=[], groupIndex=Math.floor(Math.random()*3), usedSeconds=0, exercisesSinceRest=0, prepare=PREPARE_FIRST;
 
   while(true){
     const group=groups[groupIndex%3];
     const exercise=pickExercise(group,used);
-    const work=exerciseDuration(exercise);
+    const work=exerciseDuration(exercise,params);
     if(usedSeconds+prepare+work>totalSeconds) break;
     used.add(exercise.id);
     schedule.push({type:'exercise',exercise,group,prepare,work});
     usedSeconds+=prepare+work;
     exercisesSinceRest++;
     groupIndex++;
-    prepare=PREPARE_DEFAULT;
-    if(exercisesSinceRest>=EXERCISES_PER_REST && usedSeconds+REST_DURATION+PREPARE_AFTER_REST+WORK_DURATION<=totalSeconds){
-      schedule.push({type:'rest',duration:REST_DURATION});
-      usedSeconds+=REST_DURATION;
+    prepare=params.prepare;
+    if(exercisesSinceRest>=params.restEvery && usedSeconds+params.rest+PREPARE_AFTER_REST+params.work<=totalSeconds){
+      schedule.push({type:'rest',duration:params.rest});
+      usedSeconds+=params.rest;
       exercisesSinceRest=0;
       prepare=PREPARE_AFTER_REST;
     }
@@ -400,11 +467,12 @@ function buildPhases(schedule){
     const base={item,itemIndex:i,exNum};
     if(item.prepare>0) add({...base,kind:'prepare',duration:item.prepare});
     if(item.exercise.unilateral){
-      add({...base,kind:'work',duration:WORK_DURATION/2,side:1});
+      const half=(item.work-SWITCH_DURATION)/2;
+      add({...base,kind:'work',duration:half,side:1});
       add({...base,kind:'switch',duration:SWITCH_DURATION});
-      add({...base,kind:'work',duration:WORK_DURATION/2,side:2,last:true});
+      add({...base,kind:'work',duration:half,side:2,last:true});
     } else {
-      add({...base,kind:'work',duration:WORK_DURATION,last:true});
+      add({...base,kind:'work',duration:item.work,last:true});
     }
   });
   return phases;
@@ -505,7 +573,7 @@ function formatDuration(secs){
 }
 
 function showPreview(){
-  state.schedule=generateSchedule(state.minutes);
+  state.schedule=generateSchedule(state.minutes,LEVELS[state.level].value);
   renderPreview();
   showScreen(previewScreen);
   previewList.scrollTop=0;
@@ -527,7 +595,7 @@ function swapExercise(index){
 
 function renderPreview(){
   const exerciseCount=state.schedule.filter(s=>s.type==='exercise').length;
-  previewSummary.textContent=exerciseCount+' ejercicios · '+formatDuration(scheduleSeconds(state.schedule));
+  previewSummary.textContent=LEVELS[state.level].label+' · '+exerciseCount+' ejercicios · '+formatDuration(scheduleSeconds(state.schedule));
   previewList.innerHTML='';
   state.schedule.forEach((item,i)=>{
     const row=document.createElement('div');
@@ -548,7 +616,7 @@ function renderPreview(){
     name.textContent=item.exercise.name;
     const meta=document.createElement('div');
     meta.className='preview-meta';
-    meta.innerHTML='<span class="tag '+item.group+'">'+GROUP_LABELS[item.group]+'</span>'+(item.exercise.unilateral?(WORK_DURATION/2)+' s por lado':WORK_DURATION+' s');
+    meta.innerHTML='<span class="tag '+item.group+'">'+GROUP_LABELS[item.group]+'</span>'+(item.exercise.unilateral?((item.work-SWITCH_DURATION)/2)+' s por lado':item.work+' s');
     info.append(name,meta);
     const swap=document.createElement('button');
     swap.className='btn-swap';
