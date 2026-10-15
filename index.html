@@ -13,7 +13,7 @@
 :root{
   --bg:#1a1a2e;--bg2:#16213e;--text:#eee;--accent:#ff6b35;
   --accent2:#ffd166;--blue:#3a86ff;--red:#ef476f;--green:#06d6a0;
-  --gray:#8d99ae;
+  --gray:#8d99ae;--text2:#c5ccd8;
 }
 html,body{height:100%;overflow:hidden}
 body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--text);display:flex;flex-direction:column;align-items:center;justify-content:center;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
@@ -41,7 +41,7 @@ body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:var(--
 .btn-go:active{transform:scale(.95)}
 
 .exercise-header{width:100%;display:flex;justify-content:space-between;align-items:center;padding:0 5px;margin-bottom:6px}
-.exercise-progress-text{font-size:.8rem;color:var(--gray)}
+.exercise-progress-text{font-size:1rem;font-weight:700;color:var(--text2);font-variant-numeric:tabular-nums}
 .btn-pause{width:44px;height:44px;border-radius:50%;border:2px solid var(--gray);background:transparent;color:var(--gray);font-size:1.2rem;cursor:pointer;display:flex;align-items:center;justify-content:center}
 .btn-pause:active{border-color:var(--accent);color:var(--accent)}
 
@@ -51,13 +51,44 @@ body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:var(--
 .exercise-illustration{width:100%;flex:1;display:flex;align-items:center;justify-content:center;min-height:0;position:relative;overflow:hidden}
 .exercise-illustration img{max-width:100%;max-height:100%;object-fit:contain;border-radius:12px}
 .exercise-illustration svg{width:100%;max-width:200px;max-height:100%}
+.exercise-illustration.resting{opacity:.5;transition:opacity .3s}
 
-.exercise-name{font-size:1.4rem;font-weight:800;margin:6px 0 2px;text-align:center;min-height:1.8em;display:flex;align-items:center;justify-content:center}
-.exercise-desc{font-size:.78rem;color:var(--gray);text-align:center;min-height:1.2em;margin-bottom:2px;padding:0 10px;line-height:1.3}
-.side-indicator{font-size:1rem;font-weight:600;min-height:1.4em;margin-bottom:4px;transition:opacity .3s}
+.exercise-name{font-size:1.6rem;line-height:1.15;font-weight:800;margin:6px 0 2px;text-align:center;min-height:1.8em;display:flex;align-items:center;justify-content:center}
+.exercise-desc{font-size:.95rem;color:var(--text2);text-align:center;min-height:1.3em;margin-bottom:4px;padding:0 12px;line-height:1.4;max-width:520px}
+.side-indicator{font-size:1.1rem;font-weight:700;min-height:1.4em;margin-bottom:4px;transition:opacity .3s}
 .side-indicator.blue{color:var(--blue)}
 .side-indicator.red{color:var(--red)}
 .side-indicator.change{color:var(--accent2);font-size:1.15rem;font-weight:800;animation:pulse .5s ease infinite alternate}
+.side-indicator.prepare{color:var(--accent2);font-size:1.15rem;font-weight:800;letter-spacing:1px}
+.header-actions{display:flex;gap:8px}
+.player-controls{display:flex;align-items:center;justify-content:center;gap:28px;margin-bottom:6px}
+.btn-skip{width:56px;height:56px;border-radius:50%;border:2px solid var(--text2);background:transparent;color:var(--text2);font-size:1.3rem;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.btn-skip:active{border-color:var(--accent);color:var(--accent)}
+.btn-skip span{font-size:.7rem;display:block}
+.timer-ring-container.small{margin:0}
+
+/* Preview */
+#previewScreen{justify-content:flex-start;padding:16px}
+.preview-top{width:100%;max-width:560px;display:flex;align-items:center;gap:12px;margin-bottom:6px}
+.btn-back{width:44px;height:44px;border-radius:50%;border:2px solid var(--text2);background:transparent;color:var(--text2);font-size:1.3rem;cursor:pointer;flex-shrink:0}
+.preview-title{font-size:1.5rem;font-weight:900;color:var(--accent)}
+.preview-summary{width:100%;max-width:560px;color:var(--text2);font-size:1rem;margin-bottom:12px}
+.preview-list{width:100%;max-width:560px;flex:1;overflow-y:auto;min-height:0;display:flex;flex-direction:column;gap:8px;padding-bottom:8px}
+.preview-item{display:flex;align-items:center;gap:12px;background:var(--bg2);border-radius:12px;padding:8px 10px}
+.preview-thumb{width:56px;height:56px;border-radius:8px;background:#fff;flex-shrink:0;overflow:hidden;display:flex;align-items:center;justify-content:center}
+.preview-thumb img{width:100%;height:100%;object-fit:cover}
+.preview-thumb svg{width:100%;height:100%;background:var(--bg)}
+.preview-info{flex:1;min-width:0}
+.preview-name{font-size:1.05rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.preview-meta{font-size:.9rem;color:var(--text2)}
+.preview-item.rest{background:transparent;border:1px dashed var(--green);justify-content:center;color:var(--green);font-weight:700;padding:10px}
+.btn-swap{width:44px;height:44px;border-radius:50%;border:none;background:transparent;color:var(--accent2);font-size:1.4rem;cursor:pointer;flex-shrink:0}
+.btn-swap:disabled{opacity:.3}
+.preview-actions{width:100%;max-width:560px;display:flex;gap:12px;justify-content:center;padding-top:10px}
+.btn-secondary{height:56px;padding:0 20px;border-radius:28px;border:2px solid var(--accent);background:transparent;color:var(--accent);font-size:1.05rem;font-weight:700;cursor:pointer}
+.btn-secondary:active{background:var(--accent);color:#fff}
+.tag{display:inline-block;font-size:.75rem;font-weight:700;padding:1px 8px;border-radius:10px;margin-right:6px;color:var(--bg)}
+.tag.lower{background:var(--blue)}.tag.upper{background:var(--accent)}.tag.core{background:var(--green)}
 
 @keyframes pulse{from{opacity:.7;transform:scale(1)}to{opacity:1;transform:scale(1.08)}}
 
@@ -71,7 +102,7 @@ body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:var(--
 
 .finish-trophy{font-size:5rem;margin-bottom:15px}
 .finish-text{font-size:1.8rem;font-weight:900;color:var(--accent2);text-align:center;margin-bottom:10px}
-.finish-stats{font-size:.95rem;color:var(--gray);text-align:center;margin-bottom:30px;line-height:1.6}
+.finish-stats{font-size:1.05rem;color:var(--text2);text-align:center;margin-bottom:30px;line-height:1.6}
 .btn-restart{width:180px;height:50px;border-radius:25px;border:2px solid var(--accent);background:transparent;color:var(--accent);font-size:1.1rem;font-weight:700;cursor:pointer;transition:all .15s}
 .btn-restart:active{background:var(--accent);color:#fff}
 
@@ -83,7 +114,7 @@ body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:var(--
 .pause-title{font-size:1.8rem;font-weight:800;color:var(--accent2);margin-bottom:30px}
 .btn-resume{width:180px;height:56px;border-radius:28px;border:none;background:linear-gradient(135deg,var(--green),#0abf8a);color:#fff;font-size:1.3rem;font-weight:800;cursor:pointer;box-shadow:0 4px 20px rgba(6,214,160,.3)}
 .btn-resume:active{transform:scale(.95)}
-.btn-quit{margin-top:15px;background:none;border:none;color:var(--gray);font-size:.95rem;cursor:pointer;text-decoration:underline}
+.btn-quit{margin-top:15px;background:none;border:none;color:var(--text2);font-size:1rem;padding:10px;cursor:pointer;text-decoration:underline}
 </style>
 </head>
 <body>
@@ -121,7 +152,10 @@ body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:var(--
 <div id="exerciseScreen" class="screen">
   <div class="exercise-header">
     <span class="exercise-progress-text" id="progressText">1 / 12</span>
-    <button class="btn-pause" id="btnPause" aria-label="Pausar">&#10074;&#10074;</button>
+    <div class="header-actions">
+      <button class="btn-pause" id="btnSound" aria-label="Sonido">&#128266;</button>
+      <button class="btn-pause" id="btnPause" aria-label="Pausar">&#10074;&#10074;</button>
+    </div>
   </div>
   <div class="progress-bar-container">
     <div class="progress-bar" id="progressBar"></div>
@@ -129,7 +163,9 @@ body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:var(--
   <div class="exercise-illustration" id="exerciseIllustration"></div>
   <div class="exercise-name" id="exerciseName"></div>
   <div class="exercise-desc" id="exerciseDesc"></div>
-  <div class="side-indicator" id="sideIndicator">&nbsp;</div>
+  <div class="side-indicator" id="sideIndicator" aria-live="polite">&nbsp;</div>
+  <div class="player-controls">
+    <button class="btn-skip" id="btnPrev" aria-label="Ejercicio anterior">&#9198;</button>
   <div class="timer-ring-container">
     <svg class="timer-ring" viewBox="0 0 150 150">
       <circle class="timer-ring-bg" cx="75" cy="75" r="68"/>
@@ -137,11 +173,26 @@ body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:var(--
     </svg>
     <div class="timer-text" id="timerText">40</div>
   </div>
+    <button class="btn-skip" id="btnSkip" aria-label="Saltar ejercicio">&#9197;</button>
+  </div>
+</div>
+
+<div id="previewScreen" class="screen">
+  <div class="preview-top">
+    <button class="btn-back" id="btnBack" aria-label="Volver">&#8592;</button>
+    <div class="preview-title">Tu entreno</div>
+  </div>
+  <div class="preview-summary" id="previewSummary"></div>
+  <div class="preview-list" id="previewList"></div>
+  <div class="preview-actions">
+    <button class="btn-secondary" id="btnShuffle">&#128256; Otro</button>
+    <button class="btn-go" id="btnStart">EMPEZAR</button>
+  </div>
 </div>
 
 <div id="finishScreen" class="screen">
-  <div class="finish-trophy">&#127942;</div>
-  <div class="finish-text">Bien hecho<br>campeón!</div>
+  <div class="finish-trophy" id="finishTrophy">&#127942;</div>
+  <div class="finish-text" id="finishText">Bien hecho<br>campeón!</div>
   <div class="finish-stats" id="finishStats"></div>
   <button class="btn-restart" id="btnRestart">Nuevo entreno</button>
 </div>
@@ -168,6 +219,12 @@ const EXERCISES = {
     {id:'dead_lift',name:'Dead Lift',desc:'Peso muerto: baja la kettlebell al suelo con espalda recta',unilateral:false,preferred:true,hasPhoto:true},
     {id:'catchers_squat_press',name:"Catcher's Squat & Press",desc:'Sentadilla catcher + press arriba al subir',unilateral:true,preferred:false,hasPhoto:true},
     {id:'bridge_leg_spreaders',name:'Bridge Leg Spreaders',desc:'Puente de glúteos con kettlebell al pecho, abre y cierra piernas',unilateral:false,preferred:false,hasPhoto:true},
+    // Pendientes de foto: se activan al poner img/<id>.jpg y cambiar hasPhoto a true
+    {id:'front_rack_squat',name:'Front Rack Squat',desc:'Sentadilla con la kettlebell en posición rack sobre el hombro',unilateral:true,preferred:true,hasPhoto:false},
+    {id:'single_leg_deadlift',name:'Single-Leg Deadlift',desc:'Peso muerto a una pierna, cadera atrás y espalda recta',unilateral:true,preferred:true,hasPhoto:false},
+    {id:'lateral_lunge',name:'Lateral Lunge',desc:'Zancada lateral con kettlebell al pecho, cadera atrás',unilateral:true,preferred:true,hasPhoto:false},
+    {id:'split_squat',name:'Split Squat',desc:'Sentadilla en zancada estática, kettlebell al pecho',unilateral:true,preferred:false,hasPhoto:false},
+    {id:'curtsy_lunge',name:'Curtsy Lunge',desc:'Zancada cruzada hacia atrás, como una reverencia',unilateral:true,preferred:false,hasPhoto:false},
   ],
   upper: [
     {id:'biceps_curls',name:'Biceps Curls',desc:'Curl de bíceps con kettlebell, codos pegados al cuerpo',unilateral:false,preferred:true,hasPhoto:true},
@@ -181,6 +238,12 @@ const EXERCISES = {
     {id:'halo',name:'Halo',desc:'Gira la kettlebell alrededor de la cabeza como un halo',unilateral:false,preferred:false,hasPhoto:true},
     {id:'one_arm_alt_swing',name:'One-arm Alternating Swing',desc:'Swing a un brazo alternando mano en cada repetición',unilateral:true,preferred:true,hasPhoto:true},
     {id:'kettlebell_clean',name:'Kettlebell Clean',desc:'Tirón explosivo desde el suelo hasta posición rack en el hombro',unilateral:true,preferred:false,hasPhoto:false},
+    {id:'clean_and_press',name:'Clean & Press',desc:'Clean hasta el hombro y press por encima de la cabeza',unilateral:true,preferred:true,hasPhoto:false},
+    {id:'floor_press',name:'Floor Press',desc:'Tumbado en el suelo, empuja la kettlebell hacia arriba',unilateral:true,preferred:true,hasPhoto:false},
+    {id:'push_press',name:'Push Press',desc:'Press por encima de la cabeza ayudado con un pequeño impulso de piernas',unilateral:true,preferred:false,hasPhoto:false},
+    {id:'upright_row',name:'Upright Row',desc:'Remo al mentón con ambas manos, codos por encima de las muñecas',unilateral:false,preferred:false,hasPhoto:false},
+    {id:'kettlebell_snatch',name:'Kettlebell Snatch',desc:'Arranque explosivo desde entre las piernas hasta arriba en un solo gesto',unilateral:true,preferred:false,hasPhoto:false},
+    {id:'pullover',name:'Pullover',desc:'Tumbado, lleva la kettlebell desde el pecho hasta detrás de la cabeza',unilateral:false,preferred:false,hasPhoto:false},
   ],
   core: [
     {id:'mason_twist',name:'Mason Twist',desc:'Sentado, gira el torso lado a lado con la kettlebell',unilateral:false,preferred:true,hasPhoto:true},
@@ -196,6 +259,10 @@ const EXERCISES = {
     {id:'turkish_getup',name:'Turkish Get-Up',desc:'Levántate del suelo paso a paso con kettlebell arriba, brazo extendido',unilateral:true,preferred:false,hasPhoto:false},
     {id:'figure_8',name:'Figure 8',desc:'Pasa la kettlebell entre las piernas dibujando un 8',unilateral:false,preferred:false,hasPhoto:false},
     {id:'high_pull',name:'High Pull',desc:'Tirón explosivo llevando la kettlebell hasta la barbilla',unilateral:true,preferred:false,hasPhoto:false},
+    {id:'windmill',name:'Windmill',desc:'Kettlebell arriba, inclina el tronco hasta tocar el pie contrario',unilateral:true,preferred:false,hasPhoto:false},
+    {id:'plank_pull_through',name:'Plank Pull-Through',desc:'En plancha, arrastra la kettlebell de un lado al otro por debajo',unilateral:false,preferred:true,hasPhoto:false},
+    {id:'dead_bug',name:'Dead Bug',desc:'Tumbado boca arriba, kettlebell arriba, baja brazo y pierna contrarios',unilateral:false,preferred:false,hasPhoto:false},
+    {id:'suitcase_carry',name:'Suitcase Carry',desc:'Camina con la kettlebell en una mano sin inclinar el tronco',unilateral:true,preferred:false,hasPhoto:false},
   ]
 };
 
@@ -208,7 +275,10 @@ const EXERCISE_SVGS = {
 };
 
 // ========== APP STATE ==========
-let state = { minutes:10, schedule:[], currentIndex:0, timeLeft:0, totalDuration:0, isPaused:false, intervalId:null };
+const WORK_DURATION=40, REST_DURATION=30, SWITCH_DURATION=5;
+const PREPARE_FIRST=5, PREPARE_AFTER_REST=5, PREPARE_DEFAULT=10;
+const EXERCISES_PER_REST=5;
+let state = { minutes:10, schedule:[], phases:[], phaseIndex:0, phaseEndAt:0, remainingMs:0, lastSecond:null, totalDuration:0, totalExercises:0, renderedItem:null, isPaused:false, running:false, tickId:null };
 
 const $ = id => document.getElementById(id);
 const homeScreen=$('homeScreen'), exerciseScreen=$('exerciseScreen'), finishScreen=$('finishScreen');
@@ -256,155 +326,420 @@ document.addEventListener('touchend',()=>wheelDragging=false);
 updateWheel();
 
 // ========== ILLUSTRATION ==========
+// An exercise can be used once it has a photo or a fallback drawing
+function isAvailable(ex){ return ex.hasPhoto || !!EXERCISE_SVGS[ex.id] }
+
+function fillIllustration(container, ex){
+  if(ex.hasPhoto){
+    const img = document.createElement('img');
+    img.src = 'img/'+ex.id+'.jpg';
+    img.alt = ex.name;
+    img.onerror = function(){ container.innerHTML = EXERCISE_SVGS[ex.id]||''; };
+    container.innerHTML = '';
+    container.appendChild(img);
+  } else {
+    container.innerHTML = EXERCISE_SVGS[ex.id]||'';
+  }
+}
+
 function renderIllustration(item){
   if(item.type==='rest'){
     exerciseIllustration.innerHTML = EXERCISE_SVGS.rest;
     return;
   }
-  const ex = item.exercise;
-  if(ex.hasPhoto){
-    const img = document.createElement('img');
-    img.src = 'img/'+ex.id+'.jpg';
-    img.alt = ex.name;
-    img.onerror = function(){ this.parentElement.innerHTML = EXERCISE_SVGS[ex.id]||''; };
-    exerciseIllustration.innerHTML = '';
-    exerciseIllustration.appendChild(img);
-  } else {
-    exerciseIllustration.innerHTML = EXERCISE_SVGS[ex.id]||'';
-  }
+  fillIllustration(exerciseIllustration, item.exercise);
 }
 
 // ========== WORKOUT GENERATION ==========
-function pickExercise(group){
-  const exercises=EXERCISES[group];
+function pickExercise(group, used){
+  const candidates=EXERCISES[group].filter(isAvailable);
+  const unused=candidates.filter(ex=>!used.has(ex.id));
+  const pool=unused.length?unused:candidates;
   const weighted=[];
-  exercises.forEach(ex=>{ for(let i=0;i<(ex.preferred?3:1);i++) weighted.push(ex) });
+  pool.forEach(ex=>{ for(let i=0;i<(ex.preferred?3:1);i++) weighted.push(ex) });
   return weighted[Math.floor(Math.random()*weighted.length)];
 }
 
+function exerciseDuration(ex){ return WORK_DURATION+(ex.unilateral?SWITCH_DURATION:0) }
+
 function generateSchedule(totalMinutes){
   const totalSeconds=totalMinutes*60;
-  const exerciseDuration=40, restDuration=30;
-  const groups=['lower','upper','core'];
-  let schedule=[], groupIndex=Math.floor(Math.random()*3), usedSeconds=0, exercisesSinceRest=0;
+  const groups=['lower','upper','core'], used=new Set();
+  let schedule=[], groupIndex=Math.floor(Math.random()*3), usedSeconds=0, exercisesSinceRest=0, prepare=PREPARE_FIRST;
 
-  while(usedSeconds+exerciseDuration<=totalSeconds){
+  while(true){
     const group=groups[groupIndex%3];
-    schedule.push({type:'exercise',exercise:pickExercise(group),group,duration:exerciseDuration});
-    usedSeconds+=exerciseDuration;
+    const exercise=pickExercise(group,used);
+    const work=exerciseDuration(exercise);
+    if(usedSeconds+prepare+work>totalSeconds) break;
+    used.add(exercise.id);
+    schedule.push({type:'exercise',exercise,group,prepare,work});
+    usedSeconds+=prepare+work;
     exercisesSinceRest++;
     groupIndex++;
-    if(exercisesSinceRest>=5 && usedSeconds+restDuration+exerciseDuration<=totalSeconds){
-      schedule.push({type:'rest',duration:restDuration});
-      usedSeconds+=restDuration;
+    prepare=PREPARE_DEFAULT;
+    if(exercisesSinceRest>=EXERCISES_PER_REST && usedSeconds+REST_DURATION+PREPARE_AFTER_REST+WORK_DURATION<=totalSeconds){
+      schedule.push({type:'rest',duration:REST_DURATION});
+      usedSeconds+=REST_DURATION;
       exercisesSinceRest=0;
+      prepare=PREPARE_AFTER_REST;
     }
   }
+  if(schedule.length && schedule[schedule.length-1].type==='rest') schedule.pop();
   return schedule;
 }
+
+// Each exercise becomes timed phases: prepare -> work (unilateral: side 1 -> switch -> side 2)
+function buildPhases(schedule){
+  const phases=[];
+  let exNum=0, offset=0;
+  const add=p=>{ p.offset=offset; offset+=p.duration; phases.push(p) };
+  schedule.forEach((item,i)=>{
+    if(item.type==='rest'){ add({kind:'rest',duration:item.duration,item,itemIndex:i,next:schedule[i+1]}); return; }
+    exNum++;
+    const base={item,itemIndex:i,exNum};
+    if(item.prepare>0) add({...base,kind:'prepare',duration:item.prepare});
+    if(item.exercise.unilateral){
+      add({...base,kind:'work',duration:WORK_DURATION/2,side:1});
+      add({...base,kind:'switch',duration:SWITCH_DURATION});
+      add({...base,kind:'work',duration:WORK_DURATION/2,side:2,last:true});
+    } else {
+      add({...base,kind:'work',duration:WORK_DURATION,last:true});
+    }
+  });
+  return phases;
+}
+
+// ========== EVENTS & SOUND ==========
+// The player only emits events; sound (and later, voice) reacts to them.
+const listeners=[];
+function onPlayerEvent(fn){ listeners.push(fn) }
+function emit(type,data){ listeners.forEach(fn=>fn(type,data||{})) }
+
+const Sound = {
+  ctx:null,
+  enabled:true,
+  unlock(){
+    try{
+      if(!this.ctx){ const AC=window.AudioContext||window.webkitAudioContext; if(AC) this.ctx=new AC(); }
+      if(this.ctx && this.ctx.state==='suspended') this.ctx.resume();
+    }catch(e){}
+  },
+  tone(freq,dur,delay=0,vol=0.3){
+    if(!this.enabled||!this.ctx) return;
+    const t=this.ctx.currentTime+delay;
+    const osc=this.ctx.createOscillator(), gain=this.ctx.createGain();
+    osc.type='sine';
+    osc.frequency.value=freq;
+    gain.gain.setValueAtTime(0.0001,t);
+    gain.gain.exponentialRampToValueAtTime(vol,t+0.01);
+    gain.gain.exponentialRampToValueAtTime(0.0001,t+dur);
+    osc.connect(gain).connect(this.ctx.destination);
+    osc.start(t);
+    osc.stop(t+dur+0.05);
+  }
+};
+try{ Sound.enabled=localStorage.getItem('kettlego.sound')!=='off' }catch(e){}
+
+onPlayerEvent((type,data)=>{
+  if(data.late) return;
+  if(type==='countdown') Sound.tone(660,0.12);
+  else if(type==='phaseStart'){
+    const kind=data.phase.kind;
+    if(kind==='work') Sound.tone(990,0.35);
+    else if(kind==='switch'){ Sound.tone(880,0.12); Sound.tone(880,0.12,0.18); }
+    else if(data.index>0) Sound.tone(440,0.4);
+  }
+  else if(type==='finish') [523,659,784,1047].forEach((f,i)=>Sound.tone(f,0.2,i*0.15));
+});
+
+const btnSound=$('btnSound');
+function updateSoundButton(){
+  btnSound.innerHTML=Sound.enabled?'&#128266;':'&#128263;';
+  btnSound.setAttribute('aria-label',Sound.enabled?'Silenciar':'Activar sonido');
+}
+btnSound.addEventListener('click',()=>{
+  Sound.enabled=!Sound.enabled;
+  try{ localStorage.setItem('kettlego.sound',Sound.enabled?'on':'off') }catch(e){}
+  Sound.unlock();
+  updateSoundButton();
+});
+updateSoundButton();
+
+// ========== SCREEN WAKE LOCK ==========
+// Keeps the screen on during a session; the browser drops the lock when the tab is hidden
+const WakeLock = {
+  sentinel:null,
+  async acquire(){
+    try{
+      if('wakeLock' in navigator && !this.sentinel){
+        this.sentinel=await navigator.wakeLock.request('screen');
+        this.sentinel.addEventListener('release',()=>{ this.sentinel=null });
+      }
+    }catch(e){}
+  },
+  async release(){
+    try{ if(this.sentinel) await this.sentinel.release(); }catch(e){}
+    this.sentinel=null;
+  }
+};
+document.addEventListener('visibilitychange',()=>{
+  if(document.visibilityState==='visible' && state.running) WakeLock.acquire();
+});
 
 // ========== SESSION CONTROL ==========
 function showScreen(s){ document.querySelectorAll('.screen').forEach(x=>x.classList.remove('active')); s.classList.add('active') }
 
-function startSession(){
-  state.schedule=generateSchedule(state.minutes);
-  if(!state.schedule.length) return;
-  state.currentIndex=0; state.totalDuration=state.schedule.reduce((s,i)=>s+i.duration,0); state.isPaused=false;
-  showScreen(exerciseScreen);
-  startItem(0);
+// ========== PREVIEW ==========
+const previewScreen=$('previewScreen'), previewList=$('previewList'), previewSummary=$('previewSummary');
+const GROUP_LABELS={lower:'Piernas',upper:'Tren superior',core:'Core'};
+
+function scheduleSeconds(schedule){
+  return schedule.reduce((s,i)=>s+(i.type==='rest'?i.duration:i.prepare+i.work),0);
 }
 
-function startItem(index){
-  if(index>=state.schedule.length){ finishSession(); return; }
-  state.currentIndex=index;
+function formatDuration(secs){
+  const m=Math.floor(secs/60), s=secs%60;
+  if(!m) return s+' s';
+  return s?m+' min '+s+' s':m+' min';
+}
+
+function showPreview(){
+  state.schedule=generateSchedule(state.minutes);
+  renderPreview();
+  showScreen(previewScreen);
+  previewList.scrollTop=0;
+}
+
+// Same group and same sidedness, so the workout length doesn't change
+function swapCandidates(index){
   const item=state.schedule[index];
-  state.timeLeft=item.duration;
+  const used=new Set(state.schedule.filter(s=>s.type==='exercise').map(s=>s.exercise.id));
+  return EXERCISES[item.group].filter(ex=>isAvailable(ex) && !used.has(ex.id) && ex.unilateral===item.exercise.unilateral);
+}
 
-  const exerciseItems=state.schedule.filter(s=>s.type==='exercise');
-  const currentExNum=state.schedule.slice(0,index+1).filter(s=>s.type==='exercise').length;
+function swapExercise(index){
+  const candidates=swapCandidates(index);
+  if(!candidates.length) return;
+  state.schedule[index].exercise=candidates[Math.floor(Math.random()*candidates.length)];
+  renderPreview();
+}
 
-  if(item.type==='rest'){
+function renderPreview(){
+  const exerciseCount=state.schedule.filter(s=>s.type==='exercise').length;
+  previewSummary.textContent=exerciseCount+' ejercicios · '+formatDuration(scheduleSeconds(state.schedule));
+  previewList.innerHTML='';
+  state.schedule.forEach((item,i)=>{
+    const row=document.createElement('div');
+    if(item.type==='rest'){
+      row.className='preview-item rest';
+      row.textContent='Descanso · '+item.duration+' s';
+      previewList.appendChild(row);
+      return;
+    }
+    row.className='preview-item';
+    const thumb=document.createElement('div');
+    thumb.className='preview-thumb';
+    fillIllustration(thumb,item.exercise);
+    const info=document.createElement('div');
+    info.className='preview-info';
+    const name=document.createElement('div');
+    name.className='preview-name';
+    name.textContent=item.exercise.name;
+    const meta=document.createElement('div');
+    meta.className='preview-meta';
+    meta.innerHTML='<span class="tag '+item.group+'">'+GROUP_LABELS[item.group]+'</span>'+(item.exercise.unilateral?(WORK_DURATION/2)+' s por lado':WORK_DURATION+' s');
+    info.append(name,meta);
+    const swap=document.createElement('button');
+    swap.className='btn-swap';
+    swap.innerHTML='&#8635;';
+    swap.setAttribute('aria-label','Cambiar '+item.exercise.name);
+    swap.disabled=!swapCandidates(i).length;
+    swap.addEventListener('click',()=>swapExercise(i));
+    row.append(thumb,info,swap);
+    previewList.appendChild(row);
+  });
+}
+
+function startSession(){
+  Sound.unlock();
+  if(!state.schedule.length) return;
+  state.phases=buildPhases(state.schedule);
+  state.totalDuration=state.phases.reduce((s,p)=>s+p.duration,0);
+  state.totalExercises=state.schedule.filter(s=>s.type==='exercise').length;
+  state.renderedItem=null;
+  state.isPaused=false;
+  state.running=true;
+  state.completed=new Set();
+  state.startedAt=performance.now();
+  state.pausedMs=0;
+  WakeLock.acquire();
+  showScreen(exerciseScreen);
+  enterPhase(0,performance.now(),false);
+  clearInterval(state.tickId);
+  state.tickId=setInterval(tick,100);
+}
+
+function stopSession(){
+  state.running=false;
+  clearInterval(state.tickId);
+  WakeLock.release();
+}
+
+function enterPhase(index,startAt,late){
+  if(index>=state.phases.length){ finishSession(); return; }
+  state.phaseIndex=index;
+  const phase=state.phases[index];
+  state.phaseEndAt=startAt+phase.duration*1000;
+  state.lastSecond=null;
+  renderPhase(phase);
+  emit('phaseStart',{phase,index,late});
+  updateTimerDisplay(phase.duration*1000);
+}
+
+// Time comes from the clock, not from counting ticks, so throttled tabs don't drift
+function tick(){
+  if(!state.running||state.isPaused) return;
+  const now=performance.now();
+  while(state.running && now>=state.phaseEndAt){
+    const endedAt=state.phaseEndAt;
+    const ended=state.phases[state.phaseIndex];
+    if(ended.last) state.completed.add(ended.itemIndex);
+    enterPhase(state.phaseIndex+1,endedAt,now-endedAt>1000);
+  }
+  if(!state.running) return;
+  const remainingMs=state.phaseEndAt-now;
+  const sec=Math.ceil(remainingMs/1000);
+  if(sec!==state.lastSecond){
+    state.lastSecond=sec;
+    if(sec>=1 && sec<=3) emit('countdown',{seconds:sec});
+  }
+  updateTimerDisplay(remainingMs);
+}
+
+function renderPhase(phase){
+  const item=phase.item;
+  if(phase.kind==='rest'){
     progressText.textContent='Descanso';
     exerciseName.textContent='Descanso';
-    exerciseDesc.textContent='Respira y recupérate';
+    exerciseDesc.textContent=phase.next&&phase.next.type==='exercise'?'Siguiente: '+phase.next.exercise.name:'Respira y recupérate';
     sideIndicator.innerHTML='&nbsp;';
     sideIndicator.className='side-indicator';
   } else {
-    progressText.textContent=currentExNum+' / '+exerciseItems.length;
+    progressText.textContent=phase.exNum+' / '+state.totalExercises;
     exerciseName.textContent=item.exercise.name;
     exerciseDesc.textContent=item.exercise.desc;
-    sideIndicator.innerHTML='&nbsp;';
-    sideIndicator.className='side-indicator';
-  }
-  renderIllustration(item);
-  updateTimerDisplay();
-  startTimer();
-}
-
-function updateTimerDisplay(){
-  const item=state.schedule[state.currentIndex];
-  const duration=item.duration, elapsed=duration-state.timeLeft, pct=elapsed/duration;
-
-  timerRingFg.style.strokeDashoffset=TIMER_CIRCUMFERENCE*(1-pct);
-  timerText.textContent=state.timeLeft;
-
-  const totalElapsed=state.schedule.slice(0,state.currentIndex).reduce((s,i)=>s+i.duration,0)+elapsed;
-  progressBar.style.width=(totalElapsed/state.totalDuration*100)+'%';
-
-  if(item.type==='rest'){
-    timerRingFg.style.stroke='var(--green)';
-    timerText.style.color='var(--green)';
-    sideIndicator.innerHTML='&nbsp;';
-    sideIndicator.className='side-indicator';
-    return;
-  }
-
-  const half=duration/2;
-  if(elapsed<half){ timerRingFg.style.stroke='var(--blue)'; timerText.style.color='var(--blue)'; }
-  else { timerRingFg.style.stroke='var(--red)'; timerText.style.color='var(--red)'; }
-
-  if(item.exercise.unilateral){
-    const timeFromHalf=elapsed-half;
-    if(timeFromHalf>=-2 && timeFromHalf<2){
+    if(phase.kind==='prepare'){
+      sideIndicator.textContent='Prepárate';
+      sideIndicator.className='side-indicator prepare';
+    } else if(phase.kind==='switch'){
       sideIndicator.textContent='Cambia de lado';
       sideIndicator.className='side-indicator change';
-    } else if(elapsed<half){
-      sideIndicator.innerHTML='&nbsp;';
-      sideIndicator.className='side-indicator blue';
+    } else if(phase.side){
+      sideIndicator.textContent='Lado '+phase.side;
+      sideIndicator.className='side-indicator '+(phase.side===1?'blue':'red');
     } else {
       sideIndicator.innerHTML='&nbsp;';
-      sideIndicator.className='side-indicator red';
+      sideIndicator.className='side-indicator';
     }
-  } else {
-    sideIndicator.innerHTML='&nbsp;';
-    sideIndicator.className='side-indicator';
+  }
+  const shown=phase.kind==='rest'&&phase.next&&phase.next.type==='exercise'?phase.next:item;
+  exerciseIllustration.classList.toggle('resting',phase.kind==='rest');
+  if(state.renderedItem!==shown){
+    state.renderedItem=shown;
+    renderIllustration(shown);
   }
 }
 
-function startTimer(){
-  clearInterval(state.intervalId);
-  state.intervalId=setInterval(()=>{
-    if(state.isPaused) return;
-    state.timeLeft--;
-    if(state.timeLeft<=0){ clearInterval(state.intervalId); startItem(state.currentIndex+1); }
-    else updateTimerDisplay();
-  },1000);
+function phaseColor(phase,remainingMs){
+  if(phase.kind==='rest') return 'var(--green)';
+  if(phase.kind==='prepare'||phase.kind==='switch') return 'var(--accent2)';
+  if(phase.side) return phase.side===1?'var(--blue)':'var(--red)';
+  return remainingMs>3000?'var(--blue)':'var(--red)';
 }
 
-$('btnPause').addEventListener('click',()=>{ state.isPaused=true; pauseOverlay.classList.add('active') });
-$('btnResume').addEventListener('click',()=>{ state.isPaused=false; pauseOverlay.classList.remove('active') });
-$('btnQuit').addEventListener('click',()=>{ clearInterval(state.intervalId); state.isPaused=false; pauseOverlay.classList.remove('active'); showScreen(homeScreen) });
+function updateTimerDisplay(remainingMs){
+  const phase=state.phases[state.phaseIndex];
+  const durationMs=phase.duration*1000;
+  const clamped=Math.max(0,Math.min(durationMs,remainingMs));
+  const pct=1-clamped/durationMs;
+  const color=phaseColor(phase,clamped);
+
+  timerRingFg.style.strokeDashoffset=TIMER_CIRCUMFERENCE*(1-pct);
+  timerRingFg.style.stroke=color;
+  timerText.style.color=color;
+  timerText.textContent=Math.ceil(clamped/1000);
+
+  const totalElapsed=phase.offset+(durationMs-clamped)/1000;
+  progressBar.style.width=(totalElapsed/state.totalDuration*100)+'%';
+}
+
+// ========== SKIP / PREVIOUS ==========
+function currentRemainingMs(){
+  return state.isPaused?state.remainingMs:state.phaseEndAt-performance.now();
+}
+
+function jumpToItem(itemIndex){
+  if(itemIndex>=state.schedule.length){ finishSession(); return; }
+  const idx=state.phases.findIndex(p=>p.itemIndex===Math.max(0,itemIndex));
+  enterPhase(idx,performance.now(),false);
+}
+
+function skipItem(){
+  if(!state.running||state.isPaused) return;
+  jumpToItem(state.phases[state.phaseIndex].itemIndex+1);
+}
+
+// Like a music player: restart the current item, or go back one if it just started
+function previousItem(){
+  if(!state.running||state.isPaused) return;
+  const phase=state.phases[state.phaseIndex];
+  const first=state.phases.find(p=>p.itemIndex===phase.itemIndex);
+  const elapsed=phase.offset-first.offset+(phase.duration*1000-currentRemainingMs())/1000;
+  jumpToItem(elapsed>3?phase.itemIndex:phase.itemIndex-1);
+}
+
+$('btnSkip').addEventListener('click',skipItem);
+$('btnPrev').addEventListener('click',previousItem);
+
+function pauseSession(){
+  if(!state.running||state.isPaused) return;
+  state.isPaused=true;
+  state.pausedAt=performance.now();
+  state.remainingMs=state.phaseEndAt-performance.now();
+  pauseOverlay.classList.add('active');
+}
+
+function resumeSession(){
+  if(!state.isPaused) return;
+  Sound.unlock();
+  state.phaseEndAt=performance.now()+state.remainingMs;
+  state.pausedMs+=performance.now()-state.pausedAt;
+  state.isPaused=false;
+  pauseOverlay.classList.remove('active');
+}
+
+$('btnPause').addEventListener('click',pauseSession);
+$('btnResume').addEventListener('click',resumeSession);
+$('btnQuit').addEventListener('click',()=>{ stopSession(); state.isPaused=false; pauseOverlay.classList.remove('active'); showScreen(homeScreen) });
 
 function finishSession(){
-  clearInterval(state.intervalId);
-  const exerciseCount=state.schedule.filter(s=>s.type==='exercise').length;
-  finishStats.innerHTML=exerciseCount+' ejercicios completados<br>'+state.minutes+' minutos de entreno';
+  stopSession();
+  const activeSecs=Math.round((performance.now()-state.startedAt-state.pausedMs)/1000);
+  const mostlyDone=state.completed.size*2>=state.totalExercises;
+  $('finishTrophy').innerHTML=mostlyDone?'&#127942;':'&#128170;';
+  $('finishText').innerHTML=mostlyDone?'Bien hecho<br>campeón!':'Buen intento,<br>¡a por la próxima!';
+  finishStats.innerHTML=state.completed.size+' de '+state.totalExercises+' ejercicios completados<br>'+formatDuration(activeSecs)+' de entreno';
   showScreen(finishScreen);
+  emit('finish');
   launchConfetti();
 }
 
 $('btnRestart').addEventListener('click',()=>{ confettiContainer.innerHTML=''; showScreen(homeScreen) });
-$('btnGo').addEventListener('click',startSession);
+$('btnGo').addEventListener('click',showPreview);
+$('btnShuffle').addEventListener('click',showPreview);
+$('btnBack').addEventListener('click',()=>showScreen(homeScreen));
+$('btnStart').addEventListener('click',startSession);
 
 function launchConfetti(){
   confettiContainer.innerHTML='';
